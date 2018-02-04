@@ -1,3 +1,4 @@
+# Base docker-compose
 version: "2.0"
 
 services:
@@ -13,24 +14,7 @@ services:
     build: ./mysql
     volumes:
       - ./mysql/data:/var/lib/mysql
-    expose: 
-      - 3306
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=tts
-  phpmyadmin:
-    build: ./phpmyadmin
-    ports:
-      - 4000:80
-    links:
-      - mysql:db
   api:
     build: ./api
-    ports:
-      - 8080:8080
     depends_on:
       - mysql
-    environment:
-      - NODE_ENV=development
-      - PORT=8080
-      - DB_PORT=3306

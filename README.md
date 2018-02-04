@@ -6,12 +6,22 @@ Python solution to extract the courses schedules from the different Faculties of
 - docker-compose
 
 ## Run
-### Main computer
+### Install containers
 - `docker-compose build`
-- `docker-compose up`
+
+### Running
+#### For development
+- `docker-compose up -d`
+
+#### For production
+- `docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d`
+
+### Scraping 
+
+First run the Docker containers, then follow the steps below:
+
 - Wait for MySQL to initialize
 - `docker-compose run scrapper bash`
-### Scrapper image
 - `scrapy crawl faculties`
 - `scrapy crawl courses`
 - `scrapy crawl course_units -a user=up123456789`
