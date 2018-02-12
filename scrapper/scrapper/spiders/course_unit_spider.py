@@ -76,6 +76,7 @@ class CourseUnitSpider(scrapy.Spider):
         for course in self.courses:
 
             yield scrapy.http.Request(
+                dont_filter=True,
                 url='https://sigarra.up.pt/{}/pt/ucurr_geral.pesquisa_ocorr_ucs_list?pv_ano_lectivo={}&pv_curso_id={}'.format(
                     course[3], course[1], course[2]),
                 meta={'course_id': course[0]},
@@ -86,6 +87,7 @@ class CourseUnitSpider(scrapy.Spider):
         last_page = int(parse_qs(urlparse(last_page_url).query)['pv_num_pag'][0]) if last_page_url is not None else 1
         for x in range(1, last_page + 1):
             yield scrapy.http.Request(
+                dont_filter=True,
                 url=response.url + "&pv_num_pag={}".format(x),
                 meta=response.meta,
                 callback=self.extractCourseUnits)
@@ -94,6 +96,7 @@ class CourseUnitSpider(scrapy.Spider):
         course_units_table = response.css("table.dados .d")
         for course_unit_row in course_units_table:
             yield scrapy.http.Request(
+                dont_filter=True,
                 url=response.urljoin(course_unit_row.css(".t > a::attr(href)").extract_first()),
                 meta=response.meta,
                 callback=self.extractCourseUnitInfo)
