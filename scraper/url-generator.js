@@ -10,13 +10,13 @@ function generateCourseUrl(facultyAcronym, courseId, year) {
   return `https://sigarra.up.pt/${facultyAcronym}/pt/cur_geral.cur_view?pv_ano_lectivo=${year}&pv_curso_id=${courseId}`;
 }
 
-function generatePlanUrl(facultyAcronym, planId, year) {
-  return `https://sigarra.up.pt/${facultyAcronym}/pt/cur_geral.cur_planos_estudos_view?pv_plano_id=${planId}&pv_ano_lectivo=${year}`;
+function generateCourseUnitSearchUrl(facultyAcronym, courseId, year, pageNo) {
+  return `https://sigarra.up.pt/${facultyAcronym}/pt/ucurr_geral.pesquisa_ocorr_ucs_list?pv_num_pag=${pageNo}&pv_ano_lectivo=${year}&pv_uc_nome=&pv_curso_id=${courseId}`;
 }
 
 module.exports = {
   generateFacultyUrl,
   generateCoursesUrl,
   generateCourseUrl,
-  generatePlanUrl
+  generateCourseUnitSearchUrl
 };

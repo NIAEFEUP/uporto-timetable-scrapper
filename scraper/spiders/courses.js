@@ -1,4 +1,5 @@
 const cheerio = require("cheerio");
+const { deleteUntilFirstOccurence } = require("../utils");
 
 function scrapeCourses(html, facultyId) {
   const $ = cheerio.load(html);
@@ -31,7 +32,7 @@ function scrapeCourse(html, referer) {
     "div.caixa-informativa:nth-child(4) > ul:nth-child(1) > li:nth-child(1) > a:nth-child(1)"
   ).attr("href");
 
-  const searchPart = planUrl.substring(planUrl.indexOf("?") + 1);
+  const searchPart = deleteUntilFirstOccurence(planUrl, "?");
 
   const queryParams = new URLSearchParams(searchPart);
 
