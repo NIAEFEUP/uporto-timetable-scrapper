@@ -1,12 +1,52 @@
 const fs = require("fs");
-const scrape = require("./courses");
-
-const html = fs.readFileSync("./examples/courses.html", "latin1").toString();
+const { scrapeCourse, scrapeCourses } = require("./courses");
 
 describe("courses", () => {
   test("are scraped correctly", () => {
-    const expected = [];
+    const html = fs
+      .readFileSync("./examples/courses.html", "latin1")
+      .toString();
+    const facultyId = 0;
 
-    expect(scrape(html)).toEqual(expected);
+    const expected = [
+      {
+        courseId: 454,
+        facultyId,
+        year: 2017
+      },
+      {
+        courseId: 455,
+        facultyId,
+        year: 2017
+      },
+      {
+        courseId: 738,
+        facultyId,
+        year: 2017
+      }
+    ];
+
+    expect(scrapeCourses(html, facultyId)).toEqual(expected);
+  });
+});
+
+describe("course", () => {
+  test("is scraped correctly", () => {
+    const html = fs.readFileSync("./examples/course.html", "latin1").toString();
+
+    const referer = {
+      courseId: 455,
+      facultyId: 0,
+      year: 2017
+    };
+
+    const expected = {
+      ...referer,
+      acronym: "MIEIC",
+      name: "Mestrado Integrado em Engenharia Informática e Computação",
+      planId: 2496
+    };
+
+    expect(scrapeCourse(html, referer)).toEqual(expected);
   });
 });

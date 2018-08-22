@@ -39,15 +39,14 @@ class CourseSpider(scrapy.Spider):
                     '//*[@id="conteudoinner"]/div[1]/a').extract_first() is not None:  # tests if this page points to another one
                 continue
             course = Course(
+                acronym=courseHtml.css('span.pagina-atual::text').extract_first()[3:],
                 course_id=int(parse_qs(urlparse(response.url).query)['pv_curso_id'][0]),
-                name=courseHtml.css('#conteudoinner h1:last-of-type::text').extract_first(),
                 course_type=response.meta['course_type'],
                 faculty_id=response.meta['faculty_id'],
-                acronym=courseHtml.css('span.pagina-atual::text').extract_first()[3:],
+                last_updated=datetime.now(),
+                name=courseHtml.css('#conteudoinner h1:last-of-type::text').extract_first(),
+                plan_url=response.urljoin(courseHtml.xpath( '(//h3[text()="Planos de Estudos"]/following-sibling::div[1]//a)[1]/@href').extract_first()),
                 url=response.url,
-                plan_url=response.urljoin(courseHtml.xpath(
-                    '(//h3[text()="Planos de Estudos"]/following-sibling::div[1]//a)[1]/@href').extract_first()),
                 year=response.meta['year'],
-                last_updated=datetime.now()
             )
             yield course

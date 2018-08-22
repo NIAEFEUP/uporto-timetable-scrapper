@@ -1,6 +1,6 @@
 const cheerio = require("cheerio");
 
-module.exports = function scrape(html) {
+module.exports = function scrapeFaculties(html) {
   const $ = cheerio.load(html);
 
   return $(".menu-nivel-3 > a")
