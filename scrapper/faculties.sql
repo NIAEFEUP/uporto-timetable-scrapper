@@ -1,0 +1,15 @@
+INSERT INTO `faculty` (`acronym`, `name`, `last_updated`) VALUES (`faup`, `Faculdade de Arquitetura (FAUP)`, `2018-08-22 00:02:41.776438`);
+INSERT INTO `faculty` (`acronym`, `name`, `last_updated`) VALUES (`fbaup`, `Faculdade de Belas Artes (FBAUP)`, `2018-08-22 00:02:41.776839`);
+INSERT INTO `faculty` (`acronym`, `name`, `last_updated`) VALUES (`fcup`, `Faculdade de Ciências (FCUP)`, `2018-08-22 00:02:41.777111`);
+INSERT INTO `faculty` (`acronym`, `name`, `last_updated`) VALUES (`fcnaup`, `Faculdade de Ciências da Nutrição e da Alimentação (FCNAUP)`, `2018-08-22 00:02:41.777373`);
+INSERT INTO `faculty` (`acronym`, `name`, `last_updated`) VALUES (`fadeup`, `Faculdade de Desporto (FADEUP)`, `2018-08-22 00:02:41.777639`);
+INSERT INTO `faculty` (`acronym`, `name`, `last_updated`) VALUES (`fdup`, `Faculdade de Direito (FDUP)`, `2018-08-22 00:02:41.777903`);
+INSERT INTO `faculty` (`acronym`, `name`, `last_updated`) VALUES (`fep`, `Faculdade de Economia (FEP)`, `2018-08-22 00:02:41.778167`);
+INSERT INTO `faculty` (`acronym`, `name`, `last_updated`) VALUES (`feup`, `Faculdade de Engenharia (FEUP)`, `2018-08-22 00:02:41.778433`);
+INSERT INTO `faculty` (`acronym`, `name`, `last_updated`) VALUES (`ffup`, `Faculdade de Farmácia (FFUP)`, `2018-08-22 00:02:41.778692`);
+INSERT INTO `faculty` (`acronym`, `name`, `last_updated`) VALUES (`flup`, `Faculdade de Letras (FLUP)`, `2018-08-22 00:02:41.778951`);
+INSERT INTO `faculty` (`acronym`, `name`, `last_updated`) VALUES (`fmup`, `Faculdade de Medicina (FMUP)`, `2018-08-22 00:02:41.779207`);
+INSERT INTO `faculty` (`acronym`, `name`, `last_updated`) VALUES (`fmdup`, `Faculdade de Medicina Dentária (FMDUP)`, `2018-08-22 00:02:41.779466`);
+INSERT INTO `faculty` (`acronym`, `name`, `last_updated`) VALUES (`fpceup`, `Faculdade de Psicologia e de Ciências da Educação (FPCEUP)`, `2018-08-22 00:02:41.779726`);
+INSERT INTO `faculty` (`acronym`, `name`, `last_updated`) VALUES (`icbas`, `Instituto de Ciências Biomédicas Abel Salazar (ICBAS)`, `2018-08-22 00:02:41.779988`);
+INSERT INTO `faculty` (`acronym`, `name`, `last_updated`) VALUES (`pbs`, `Porto Business School`, `2018-08-22 00:02:41.780245`);

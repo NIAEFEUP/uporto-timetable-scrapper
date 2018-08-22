@@ -6,8 +6,10 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import json
 from . import items
+from .database import facultiesDb
 
 faculties = open("faculties.sql", "w")
+courses = open("courses.sql", "w")
 
 class MySQLPipeline():
     def process_item(self, item, spider):
@@ -23,6 +25,7 @@ class FacultyPipeline(MySQLPipeline):
             return item
         sql = "INSERT INTO `{0}` (`{1}`) VALUES (`{2}`);\n"
         prepared = sql.format('faculty', "`, `".join(item.keys()), "`, `".join(str(v) for v in item.values()))
+        facultiesDb.append(item)
         faculties.write(prepared)
         return item
 
@@ -34,16 +37,13 @@ class CoursePipeline(MySQLPipeline):
     def process_item(self, item, spider):
         if not isinstance(item, items.Course):
             return item
-        sql = "INSERT INTO `{0}` (`{1}`) VALUES ({2})"
+        sql = "INSERT INTO `{0}` (`{1}`) VALUES (`{2}`)"
         columns = "`, `".join(item.keys())
-        values = ", ".join("%s" for _ in item.values())
+        values = "`, `".join(str(v) for v in item.values())
         prepared = sql.format('course', columns, values)
-        try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(prepared, tuple(item.values()))
-                self.connection.commit()
-        finally:
-            return item
+        courses.write(prepared)
+        return item
+
 
 
 class CourseUnitPipeline(MySQLPipeline):
