@@ -14,9 +14,14 @@ function generateCourseUnitSearchUrl(facultyAcronym, courseId, year, pageNo) {
   return `https://sigarra.up.pt/${facultyAcronym}/pt/ucurr_geral.pesquisa_ocorr_ucs_list?pv_num_pag=${pageNo}&pv_ano_lectivo=${year}&pv_uc_nome=&pv_curso_id=${courseId}`;
 }
 
+function generateScheduleUrl(facultyAcronym, courseUnitId) {
+  return `https://sigarra.up.pt/${facultyAcronym}/pt/hor_geral.ucurr_view?pv_ocorrencia_id=${courseUnitId}`;
+}
+
 module.exports = {
   generateFacultyUrl,
   generateCoursesUrl,
   generateCourseUrl,
-  generateCourseUnitSearchUrl
+  generateCourseUnitSearchUrl,
+  generateScheduleUrl
 };

@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { scrapeSearchPages } = require("./courseUnits");
+const { scrapeSearchPages, scrapeCourseUnitInfo } = require("./courseUnits");
 
 describe("searchPages", () => {
   test("first page is scraped correctly", () => {
@@ -61,5 +61,22 @@ describe("searchPages", () => {
     };
 
     expect(scrapeSearchPages(html)).toEqual(expected);
+  });
+});
+
+describe("courseUnitInfo", () => {
+  test("is scraped correctly", () => {
+    const html = fs
+      .readFileSync("./examples/course_unit_info.html", "latin1")
+      .toString();
+
+    const expected = {
+      acronym: "AGRS",
+      courseYear: 4,
+      year: 2018,
+      semesters: [2]
+    };
+
+    expect(scrapeCourseUnitInfo(html)).toEqual(expected);
   });
 });
