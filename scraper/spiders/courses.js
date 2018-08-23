@@ -12,7 +12,7 @@ function scrapeCourses(html, facultyId) {
       const queryParams = new URLSearchParams(searchPart);
 
       return {
-        courseId: parseInt(queryParams.get("pv_curso_id"), 10),
+        id: parseInt(queryParams.get("pv_curso_id"), 10),
         facultyId,
         year: parseInt(queryParams.get("pv_ano_lectivo"), 10)
       };
@@ -40,7 +40,7 @@ function scrapeCourse(html, referer) {
     acronym: $("span.pagina-atual")
       .text()
       .substring(3),
-    courseId: referer.courseId,
+    id: referer.id,
     facultyId: referer.facultyId,
     name: $("#conteudoinner > h1:last-of-type").text(),
     planId: parseInt(queryParams.get("pv_plano_id"), 10),

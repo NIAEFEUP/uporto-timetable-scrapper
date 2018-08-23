@@ -10,17 +10,17 @@ describe("courses", () => {
 
     const expected = [
       {
-        courseId: 454,
+        id: 454,
         facultyId,
         year: 2017
       },
       {
-        courseId: 455,
+        id: 455,
         facultyId,
         year: 2017
       },
       {
-        courseId: 738,
+        id: 738,
         facultyId,
         year: 2017
       }
@@ -35,7 +35,7 @@ describe("course", () => {
     const html = fs.readFileSync("./examples/course.html", "latin1").toString();
 
     const referer = {
-      courseId: 455,
+      id: 455,
       facultyId: 0,
       year: 2017
     };

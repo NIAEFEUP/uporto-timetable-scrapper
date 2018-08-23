@@ -1,5 +1,5 @@
 const fs = require("fs");
-const scrape = require("./faculties");
+const { scrapeFaculties } = require("./faculties");
 
 const html = fs.readFileSync("./examples/faculties.html", "latin1").toString();
 
@@ -32,6 +32,6 @@ describe("faculties", () => {
       { acronym: "pbs", name: "Porto Business School" }
     ];
 
-    expect(scrape(html)).toEqual(expected);
+    expect(scrapeFaculties(html)).toEqual(expected);
   });
 });
