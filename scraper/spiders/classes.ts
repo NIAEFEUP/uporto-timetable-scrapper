@@ -1,9 +1,11 @@
-const cheerio = require("cheerio");
+import * as cheerio from "cheerio";
+import { URLSearchParams } from "url";
+import { Class } from "../models";
 
-function scrapeClasses(html) {
+export function scrapeClasses(html: string): Class[] {
   const $ = cheerio.load(html);
 
-  return $("table.tabela > tbody > tr.d > td a")
+  return ($("table.tabela > tbody > tr.d > td a")
     .map((_, elem) => {
       const className = $(elem).text();
       const href = $(elem).attr("href");
@@ -13,13 +15,9 @@ function scrapeClasses(html) {
       const queryParams = new URLSearchParams(searchPart);
 
       return {
-        id: parseInt(queryParams.get("pv_turma_id"), 10),
+        id: parseInt(queryParams.get("pv_turma_id") as string, 10),
         className
       };
     })
-    .get();
+    .get() as any) as Class[];
 }
-
-module.exports = {
-  scrapeClasses
-};

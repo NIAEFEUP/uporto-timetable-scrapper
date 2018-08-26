@@ -1,11 +1,12 @@
-const fs = require("fs");
-const { scrapeClasses } = require("./classes");
+import fs from "fs";
+import { Class } from "../models";
+import { scrapeClasses } from "./classes";
 
 const classes = fs.readFileSync("./examples/classes.html", "latin1").toString();
 
 describe("classes", () => {
   test("are scraped correctly", () => {
-    const expected = [
+    const expected: Class[] = [
       { className: "1MIEIC01", id: 207783 },
       { className: "1MIEIC02", id: 207784 },
       { className: "1MIEIC03", id: 207785 },

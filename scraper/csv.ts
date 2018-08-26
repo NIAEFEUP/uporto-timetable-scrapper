@@ -1,8 +1,8 @@
 const csv = require("csv");
 
-function generateCsv(objects) {
+export function generateCsv(objects: any) {
   return new Promise((resolve, reject) => {
-    csv.stringify(objects, (error, output) => {
+    csv.stringify(objects, (error: any, output: any) => {
       if (error) {
         reject(error);
       } else {
@@ -11,7 +11,3 @@ function generateCsv(objects) {
     });
   });
 }
-
-module.exports = {
-  generateCsv
-};

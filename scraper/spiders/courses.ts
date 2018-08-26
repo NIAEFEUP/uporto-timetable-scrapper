@@ -1,10 +1,15 @@
-const cheerio = require("cheerio");
-const { deleteUntilFirstOccurence } = require("../utils");
+import * as cheerio from "cheerio";
+import { URLSearchParams } from "url";
+import { Course, IncompleteCourse } from "../models";
+import { deleteUntilFirstOccurence } from "../utils";
 
-function scrapeCourses(html, facultyId) {
+export function scrapeCourses(
+  html: string,
+  facultyAcronym: string
+): IncompleteCourse[] {
   const $ = cheerio.load(html);
 
-  return $("#conteudoinner h2 + ul li a:first-child")
+  return ($("#conteudoinner h2 + ul li a:first-child")
     .map((i, elem) => {
       const href = $(elem).attr("href");
       const searchPart = href.substring(href.indexOf("?") + 1);
@@ -12,15 +17,18 @@ function scrapeCourses(html, facultyId) {
       const queryParams = new URLSearchParams(searchPart);
 
       return {
-        id: parseInt(queryParams.get("pv_curso_id"), 10),
-        facultyId,
-        year: parseInt(queryParams.get("pv_ano_lectivo"), 10)
+        id: parseInt(queryParams.get("pv_curso_id")!, 10),
+        facultyAcronym,
+        year: parseInt(queryParams.get("pv_ano_lectivo")!, 10)
       };
     })
-    .get();
+    .get() as any) as IncompleteCourse[];
 }
 
-function scrapeCourse(html, referer) {
+export function scrapeCourse(
+  html: string,
+  referer: IncompleteCourse
+): Course | null {
   const $ = cheerio.load(html);
 
   // tests if this page points to another one
@@ -37,18 +45,11 @@ function scrapeCourse(html, referer) {
   const queryParams = new URLSearchParams(searchPart);
 
   return {
+    ...referer,
     acronym: $("span.pagina-atual")
       .text()
       .substring(3),
-    id: referer.id,
-    facultyId: referer.facultyId,
     name: $("#conteudoinner > h1:last-of-type").text(),
-    planId: parseInt(queryParams.get("pv_plano_id"), 10),
-    year: referer.year
+    planId: parseInt(queryParams.get("pv_plano_id") as string, 10)
   };
 }
-
-module.exports = {
-  scrapeCourses,
-  scrapeCourse
-};

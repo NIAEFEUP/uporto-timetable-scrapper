@@ -1,5 +1,6 @@
-const fs = require("fs");
-const { scrapeSchedule, scrapeOverlappingLessons } = require("./schedule");
+import fs from "fs";
+import { Lesson } from "../models";
+import { scrapeOverlappingLessons, scrapeSchedule } from "./schedule";
 
 const courseUnitScheduleWithResults = fs
   .readFileSync("./examples/course_unit_schedule.html", "latin1")
@@ -16,13 +17,13 @@ const classScheduleWithNoResults = fs
 
 describe("course unit schedule", () => {
   test("is scraped correctly when there are no results", () => {
-    const expected = [];
+    const expected: Lesson[] = [];
 
     expect(scrapeSchedule(courseUnitScheduleWithNoResults)).toEqual(expected);
   });
 
   test("is scraped correctly when there are results", () => {
-    const expected = [
+    const expected: Lesson[] = [
       {
         dayOfTheWeek: 0,
         duration: 2,
@@ -116,13 +117,13 @@ describe("course unit schedule", () => {
 
 describe("class schedule", () => {
   test("is scraped correctly when there are no results", () => {
-    const expected = [];
+    const expected: Lesson[] = [];
 
     expect(scrapeSchedule(classScheduleWithNoResults)).toEqual(expected);
   });
 
   test("is scraped correctly when there are results", () => {
-    const expected = [
+    const expected: Lesson[] = [
       {
         className: "1MIEIC02",
         dayOfTheWeek: 0,

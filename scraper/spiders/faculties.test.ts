@@ -1,11 +1,12 @@
-const fs = require("fs");
-const { scrapeFaculties } = require("./faculties");
+import fs from "fs";
+import { Faculty } from "../models";
+import { scrapeFaculties } from "./faculties";
 
 const html = fs.readFileSync("./examples/faculties.html", "latin1").toString();
 
 describe("faculties", () => {
   test("are scraped correctly", () => {
-    const expected = [
+    const expected: Faculty[] = [
       { acronym: "faup", name: "Faculdade de Arquitetura (FAUP)" },
       { acronym: "fbaup", name: "Faculdade de Belas Artes (FBAUP)" },
       { acronym: "fcup", name: "Faculdade de Ciências (FCUP)" },

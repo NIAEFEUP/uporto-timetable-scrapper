@@ -1,6 +1,7 @@
-const cheerio = require("cheerio");
+import * as cheerio from "cheerio";
+import { IncompleteLesson, Lesson } from "../models";
 
-const daysOfTheWeek = {
+const daysOfTheWeek: Record<string, number> = {
   Segunda: 0,
   Terça: 1,
   Quarta: 2,
@@ -9,14 +10,14 @@ const daysOfTheWeek = {
   Sábado: 5
 };
 
-function scrapeOverlappingLessons(html) {
+export function scrapeOverlappingLessons(html: string) {
   const $ = cheerio.load(html);
 
   // First two rows are headers, so must be removed
   const overlappingLessons = $("table.dados > tbody > tr").slice(2);
 
   return $(overlappingLessons)
-    .map((_, row) => {
+    .map((_: any, row: CheerioElement) => {
       let lessonType = $(row)
         .children(":nth-child(1)")
         .text();
@@ -63,7 +64,7 @@ function scrapeOverlappingLessons(html) {
     .get();
 }
 
-function scrapeLesson($, lessonElem) {
+function scrapeLesson($: CheerioStatic, lessonElem: CheerioElement): IncompleteLesson {
   let lessonType = $(lessonElem)
     .find("b")
     .text();
@@ -104,7 +105,7 @@ function scrapeLesson($, lessonElem) {
  * @param rowIndex current row index in the rows array. Also used for calculating class start time.
  * @return {*}
  */
-function scrapeRow($, rows, rowspans = [0, 0, 0, 0, 0, 0], rowIndex = 0) {
+function scrapeRow($: CheerioStatic, rows: Cheerio, rowspans = [0, 0, 0, 0, 0, 0], rowIndex = 0): Lesson[] {
   if (rows.length === rowIndex) {
     return [];
   }
@@ -146,7 +147,7 @@ function scrapeRow($, rows, rowspans = [0, 0, 0, 0, 0, 0], rowIndex = 0) {
   return classes.concat(scrapeRow($, rows, newRowspans, rowIndex + 1));
 }
 
-function scrapeSchedule(html) {
+export function scrapeSchedule(html: string): Lesson[] {
   const $ = cheerio.load(html);
 
   if ($("div#erro > h2").text() === "Sem Resultados") {
@@ -156,16 +157,9 @@ function scrapeSchedule(html) {
   const schedule = $("table.horario > tbody");
 
   // The first tr is the days of the week, so must be removed.
-  const rows = $(schedule)
+  const rows: Cheerio = $(schedule)
     .children("tr")
     .slice(1);
 
-  const classes = scrapeRow($, rows);
-
-  return classes;
+  return scrapeRow($, rows);
 }
-
-module.exports = {
-  scrapeSchedule,
-  scrapeOverlappingLessons
-};

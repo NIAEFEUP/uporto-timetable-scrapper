@@ -1,32 +1,33 @@
-const fs = require("fs");
-const { scrapeCourse, scrapeCourses } = require("./courses");
+import fs from "fs";
+import { IncompleteCourse } from "../models";
+import { scrapeCourse, scrapeCourses } from "./courses";
 
 describe("courses", () => {
   test("are scraped correctly", () => {
     const html = fs
       .readFileSync("./examples/courses.html", "latin1")
       .toString();
-    const facultyId = 0;
+    const facultyAcronym = "feup";
 
     const expected = [
       {
         id: 454,
-        facultyId,
+        facultyAcronym,
         year: 2017
       },
       {
         id: 455,
-        facultyId,
+        facultyAcronym,
         year: 2017
       },
       {
         id: 738,
-        facultyId,
+        facultyAcronym,
         year: 2017
       }
     ];
 
-    expect(scrapeCourses(html, facultyId)).toEqual(expected);
+    expect(scrapeCourses(html, facultyAcronym)).toEqual(expected);
   });
 });
 
@@ -34,9 +35,9 @@ describe("course", () => {
   test("is scraped correctly", () => {
     const html = fs.readFileSync("./examples/course.html", "latin1").toString();
 
-    const referer = {
+    const referer: IncompleteCourse = {
       id: 455,
-      facultyId: 0,
+      facultyAcronym: "feup",
       year: 2017
     };
 
