@@ -81,6 +81,7 @@ describe("courseUnitInfo", () => {
     };
 
     const expected = {
+      name: "Arquitectura e Gestão de Redes e Sistemas",
       acronym: "AGRS",
       courseId: course.id,
       courseYear: 4,

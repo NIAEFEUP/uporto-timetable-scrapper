@@ -22,6 +22,7 @@ export interface Class {
 
 export interface CourseUnit {
   acronym: string;
+  name: string;
   courseYear: number;
   courseId: number;
   year: number;

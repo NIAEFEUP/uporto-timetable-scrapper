@@ -53,7 +53,7 @@ export function scrapeCourseUnitInfo(
     return null;
   }
 
-  const name = $("div#conteudoinner > h1:nth-child(2)").text();
+  const name = $("div#conteudoinner > h1:nth-of-type(2)").text();
 
   // Checks if the course unit page is valid.
   // If name == 'Sem Resultados', then it is not and should be discarded.
@@ -95,6 +95,7 @@ export function scrapeCourseUnitInfo(
   }
 
   return {
+    name,
     acronym,
     courseYear,
     courseId: course.id,
