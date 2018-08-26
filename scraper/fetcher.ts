@@ -53,6 +53,12 @@ export async function login(username: string, password: string) {
           reject(error);
         }
 
+        if (!response.headers) {
+          reject(
+            new Error("Response did not send headers, when it should have.")
+          );
+        }
+
         const setCookies: string[] | undefined = response.headers["set-cookie"];
 
         if (

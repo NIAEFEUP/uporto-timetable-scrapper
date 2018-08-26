@@ -1,5 +1,6 @@
-import { fetchAll } from "./runner";
 import { login } from "./fetcher";
+import { fetchAll } from "./runner";
+// tslint:disable-next-line no-var-requires
 const prompt = require("prompt");
 
 interface Credentials {
@@ -33,9 +34,9 @@ async function getCredentials(): Promise<Credentials> {
 }
 
 async function run() {
-  // const { username, password } = await getCredentials();
+  const { username, password } = await getCredentials();
 
-  // await login(username, password);
+  await login(username, password);
 
   await fetchAll(2018, 1);
 }

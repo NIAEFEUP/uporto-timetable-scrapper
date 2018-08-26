@@ -1,3 +1,5 @@
+// tslint:disable-next-line no-var-requires
+const ProgressBar = require("ascii-progress");
 import { fetch } from "./fetcher";
 import {
   Class,
@@ -34,12 +36,10 @@ import {
 
 async function fetchFaculties(): Promise<Faculty[]> {
   const url = generateFacultyUrl();
+
   const html = await fetch(url);
-  const faculties: Faculty[] = scrapeFaculties(html);
 
-  console.log(`Scraped ${faculties.length} faculties successfully.`);
-
-  return faculties;
+  return scrapeFaculties(html);
 }
 
 async function fetchCoursesByType(
@@ -48,7 +48,9 @@ async function fetchCoursesByType(
   year: number
 ): Promise<IncompleteCourse[]> {
   const url = generateCoursesUrl(faculty.acronym, courseType, year);
+
   const html = await fetch(url);
+
   return scrapeCourses(html, faculty.acronym);
 }
 
@@ -79,13 +81,9 @@ async function fetchCourses(faculty: Faculty, year: number): Promise<Course[]> {
     fetchCourseInfo(faculty, c, year)
   );
 
-  const courses: Course[] = (await Promise.all(courseInfoPromises)).filter(
+  return (await Promise.all(courseInfoPromises)).filter(
     c => c !== null
   ) as Course[];
-
-  console.log(`Scraped ${courses.length} courses successfully.`);
-
-  return courses;
 }
 
 async function fetchCourseUnits(
@@ -127,13 +125,7 @@ async function fetchCourseUnits(
     unitsUrls.map(async uri => scrapeCourseUnitInfo(await fetch(uri), course))
   );
 
-  const courseUnits: CourseUnit[] = results.filter(
-    cu => cu !== null
-  ) as CourseUnit[];
-
-  console.log(`Scraped ${courseUnits.length} course units successfully.`);
-
-  return courseUnits;
+  return results.filter(cu => cu !== null) as CourseUnit[];
 }
 
 async function fetchClasses(
@@ -143,12 +135,10 @@ async function fetchClasses(
   periodId: Period
 ) {
   const url = generateClassesUrl(acronym, courseId, year, periodId);
+
   const html = await fetch(url, { cookieNeeded: true });
-  const classes: Class[] = scrapeClasses(html);
 
-  console.log(`Scraped ${classes.length} classes successfully.`);
-
-  return classes;
+  return scrapeClasses(html);
 }
 
 async function fetchClassesSchedule(
@@ -158,39 +148,94 @@ async function fetchClassesSchedule(
   classId: number
 ) {
   const url = generateClassScheduleUrl(acronym, year, periodId, classId);
+
   const html = await fetch(url, { cookieNeeded: true });
-  const schedules: Lesson[] = scrapeSchedule(html);
 
-  console.log(`Scraped ${schedules.length} schedules successfully.`);
+  return scrapeSchedule(html);
+}
 
-  return schedules;
+function createBar(expectedTotal: number, objects: any[]) {
+  const bar = new ProgressBar({
+    current: 0,
+    total: expectedTotal
+  });
+
+  const timer = setInterval(() => {
+    bar.update(objects.length / expectedTotal);
+
+    if (bar.completed) {
+      clearInterval(timer);
+    }
+  }, 500);
+}
+
+function createProgressBars(
+  faculties: Faculty[],
+  courses: Course[],
+  courseUnits: CourseUnit[],
+  classes: Class[],
+  schedules: Lesson[]
+) {
+  createBar(15, faculties);
+  createBar(327, courses);
+  createBar(414, courseUnits);
+  createBar(206, classes);
+  createBar(1500, schedules);
 }
 
 export async function fetchAll(year: number, periodId: Period) {
+  const faculties: Faculty[] = [];
   const courses: Course[] = [];
   const courseUnits: CourseUnit[] = [];
+  const classes: Class[] = [];
+  const schedules: Lesson[] = [];
 
-  const faculties = await fetchFaculties();
+  createProgressBars(faculties, courses, courseUnits, classes, schedules);
+
+  faculties.push(...(await fetchFaculties()));
   await appendToFaculties(faculties);
-  // const faculties = await loadFaculties();
 
-  faculties.forEach(async f => {
-    const facultyCourses = await fetchCourses(f, year);
-    courses.push(...facultyCourses);
+  await Promise.all(
+    faculties.map(async f => {
+      const facultyCourses = await fetchCourses(f, year);
+      courses.push(...facultyCourses);
 
-    facultyCourses.forEach(async c => {
-      courseUnits.push(...(await fetchCourseUnits(f, c, year, periodId)));
-    });
+      await Promise.all(
+        facultyCourses.map(async c => {
+          courseUnits.push(...(await fetchCourseUnits(f, c, year, periodId)));
+        })
+      );
 
-    // courses.forEach(async c => {
-    //   const classes = await fetchClasses(f.acronym, c.id, year, periodId);
+      await Promise.all(
+        courses.map(async c => {
+          const courseClasses = await fetchClasses(
+            f.acronym,
+            c.id,
+            year,
+            periodId
+          );
+          classes.push(...courseClasses);
 
-    //   classes.forEach(async cl => {
-    //     await fetchClassesSchedule(f.acronym, year, periodId, cl.id);
-    //   });
-    // });
-  });
+          await Promise.all(
+            courseClasses.map(async cl => {
+              const classesSchedule = await fetchClassesSchedule(
+                f.acronym,
+                year,
+                periodId,
+                cl.id
+              );
+              schedules.push(...classesSchedule);
+            })
+          );
+        })
+      );
+    })
+  );
 
-  await appendToCourses(courses);
-  await appendToCourseUnits(courseUnits);
+  await Promise.all([
+    appendToCourses(courses),
+    appendToCourseUnits(courseUnits),
+    appendToClasses(classes),
+    appendToSchedules(schedules)
+  ]);
 }
