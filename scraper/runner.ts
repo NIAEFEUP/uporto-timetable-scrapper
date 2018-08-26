@@ -1,4 +1,3 @@
-import { generateCsv } from "./csv";
 import { fetch } from "./fetcher";
 import {
   Class,
@@ -13,6 +12,7 @@ import {
 } from "./models";
 import { scrapeClasses } from "./spiders/classes";
 import { scrapeCourse, scrapeCourses } from "./spiders/courses";
+import { scrapeCourseUnitInfo, scrapeSearchPages } from "./spiders/courseUnits";
 import { scrapeFaculties } from "./spiders/faculties";
 import { scrapeSchedule } from "./spiders/schedule";
 import {
@@ -31,16 +31,11 @@ import {
   appendToFaculties,
   appendToSchedules
 } from "./writer";
-import { scrapeCourseUnitInfo, scrapeSearchPages } from "./spiders/courseUnits";
 
 async function fetchFaculties(): Promise<Faculty[]> {
   const url = generateFacultyUrl();
   const html = await fetch(url);
   const faculties: Faculty[] = scrapeFaculties(html);
-
-  const csv = await generateCsv(faculties);
-
-  appendToFaculties(csv);
 
   console.log(`Scraped ${faculties.length} faculties successfully.`);
 
@@ -88,10 +83,6 @@ async function fetchCourses(faculty: Faculty, year: number): Promise<Course[]> {
     c => c !== null
   ) as Course[];
 
-  const csv = await generateCsv(courses);
-
-  appendToCourses(csv);
-
   console.log(`Scraped ${courses.length} courses successfully.`);
 
   return courses;
@@ -100,14 +91,27 @@ async function fetchCourses(faculty: Faculty, year: number): Promise<Course[]> {
 async function fetchCourseUnits(
   faculty: Faculty,
   course: Course,
-  year: number
+  year: number,
+  periodId: Period
 ): Promise<CourseUnit[]> {
-  let url = generateCourseUnitSearchUrl(faculty.acronym, course.id, year, 1);
+  let url = generateCourseUnitSearchUrl(
+    faculty.acronym,
+    course.id,
+    year,
+    periodId,
+    1
+  );
   const html = await fetch(url);
   const { courseUnitIds, lastPage }: CourseUnitSearch = scrapeSearchPages(html);
 
   for (let i = 2; i < lastPage; i++) {
-    url = generateCourseUnitSearchUrl(faculty.acronym, course.id, year, i);
+    url = generateCourseUnitSearchUrl(
+      faculty.acronym,
+      course.id,
+      year,
+      periodId,
+      i
+    );
     const { courseUnitIds: ids }: CourseUnitSearch = scrapeSearchPages(
       await fetch(url)
     );
@@ -127,10 +131,6 @@ async function fetchCourseUnits(
     cu => cu !== null
   ) as CourseUnit[];
 
-  const csv = await generateCsv(courseUnits);
-
-  appendToCourseUnits(csv);
-
   console.log(`Scraped ${courseUnits.length} course units successfully.`);
 
   return courseUnits;
@@ -145,10 +145,6 @@ async function fetchClasses(
   const url = generateClassesUrl(acronym, courseId, year, periodId);
   const html = await fetch(url, { cookieNeeded: true });
   const classes: Class[] = scrapeClasses(html);
-
-  const csv = await generateCsv(classes);
-
-  appendToClasses(csv);
 
   console.log(`Scraped ${classes.length} classes successfully.`);
 
@@ -165,23 +161,25 @@ async function fetchClassesSchedule(
   const html = await fetch(url, { cookieNeeded: true });
   const schedules: Lesson[] = scrapeSchedule(html);
 
-  const csv = await generateCsv(schedules);
-
-  appendToSchedules(csv);
-
   console.log(`Scraped ${schedules.length} schedules successfully.`);
 
   return schedules;
 }
 
 export async function fetchAll(year: number, periodId: Period) {
+  const courses: Course[] = [];
+  const courseUnits: CourseUnit[] = [];
+
   const faculties = await fetchFaculties();
+  await appendToFaculties(faculties);
+  // const faculties = await loadFaculties();
 
   faculties.forEach(async f => {
-    const courses = await fetchCourses(f, year);
+    const facultyCourses = await fetchCourses(f, year);
+    courses.push(...facultyCourses);
 
-    courses.forEach(async c => {
-      await fetchCourseUnits(f, c, year);
+    facultyCourses.forEach(async c => {
+      courseUnits.push(...(await fetchCourseUnits(f, c, year, periodId)));
     });
 
     // courses.forEach(async c => {
@@ -192,4 +190,7 @@ export async function fetchAll(year: number, periodId: Period) {
     //   });
     // });
   });
+
+  await appendToCourses(courses);
+  await appendToCourseUnits(courseUnits);
 }

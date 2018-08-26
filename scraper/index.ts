@@ -33,9 +33,9 @@ async function getCredentials(): Promise<Credentials> {
 }
 
 async function run() {
-  const { username, password } = await getCredentials();
+  // const { username, password } = await getCredentials();
 
-  await login(username, password);
+  // await login(username, password);
 
   await fetchAll(2018, 1);
 }
