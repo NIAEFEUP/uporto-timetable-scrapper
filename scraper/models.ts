@@ -1,4 +1,4 @@
-export interface Faculty{
+export interface Faculty {
   acronym: string;
   name: string;
 }
@@ -20,6 +20,20 @@ export interface Class {
   className: string;
 }
 
+export interface CourseUnit {
+  acronym: string;
+  courseYear: number;
+  courseId: number;
+  year: number;
+  semesters: Period[];
+}
+
+export interface CourseUnitSearch {
+  currentPage: number;
+  lastPage: number;
+  courseUnitIds: number[];
+}
+
 export interface IncompleteLesson {
   lessonType: LessonType;
   className: string;
@@ -28,9 +42,9 @@ export interface IncompleteLesson {
 }
 
 export interface Lesson extends IncompleteLesson {
-  dayOfTheWeek: number,
-  startTime: number,
-  duration: number,
+  dayOfTheWeek: number;
+  startTime: number;
+  duration: number;
 }
 
 export type LessonType = "TP" | "T" | string;

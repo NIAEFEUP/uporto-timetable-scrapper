@@ -2,6 +2,7 @@ import fs from "fs";
 
 const FACULTIES_PATH = "./results/faculties.csv";
 const COURSES_PATH = "./results/courses.csv";
+const COURSE_UNITS_PATH = "./results/course_units.csv";
 const CLASSES_PATH = "./results/classes.csv";
 const SCHEDULES_PATH = "./results/schedules.csv";
 
@@ -11,6 +12,10 @@ if (fs.existsSync(FACULTIES_PATH)) {
 
 if (fs.existsSync(COURSES_PATH)) {
   fs.unlinkSync(COURSES_PATH);
+}
+
+if (fs.existsSync(COURSE_UNITS_PATH)) {
+  fs.unlinkSync(COURSE_UNITS_PATH);
 }
 
 if (fs.existsSync(CLASSES_PATH)) {
@@ -27,6 +32,9 @@ const faculties = fs.createWriteStream(FACULTIES_PATH, {
 const courses = fs.createWriteStream(COURSES_PATH, {
   flags: "a"
 });
+const courseUnits = fs.createWriteStream(COURSE_UNITS_PATH, {
+  flags: "a"
+});
 const classes = fs.createWriteStream(CLASSES_PATH, {
   flags: "a"
 });
@@ -40,6 +48,10 @@ export function appendToFaculties(data: string) {
 
 export function appendToCourses(data: string) {
   courses.write(data);
+}
+
+export function appendToCourseUnits(data: string) {
+  courseUnits.write(data);
 }
 
 export function appendToClasses(data: string) {

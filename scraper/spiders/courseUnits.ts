@@ -1,10 +1,12 @@
-const cheerio = require("cheerio");
-const { deleteUntilFirstOccurence } = require("../utils");
+import * as cheerio from "cheerio";
+import { URLSearchParams } from "url";
+import { Course, CourseUnit, CourseUnitSearch, Period } from "../models";
+import { deleteUntilFirstOccurence } from "../utils";
 
-function scrapeSearchPages(html) {
+export function scrapeSearchPages(html: string): CourseUnitSearch {
   const $ = cheerio.load(html);
 
-  const courseUnitIds = $("table.dados .d .t > a")
+  const courseUnitIds = ($("table.dados .d .t > a")
     .map((i, elem) => {
       const href = $(elem).attr("href");
 
@@ -12,9 +14,9 @@ function scrapeSearchPages(html) {
         deleteUntilFirstOccurence(href, "?")
       );
 
-      return parseInt(queryParams.get("pv_ocorrencia_id"), 10);
+      return parseInt(queryParams.get("pv_ocorrencia_id")!, 10);
     })
-    .get();
+    .get() as any) as number[];
 
   const currentPage = parseInt($(".paginar-paginas-atual > span").text(), 10);
 
@@ -41,8 +43,15 @@ function scrapeSearchPages(html) {
   };
 }
 
-function scrapeCourseUnitInfo(html) {
+export function scrapeCourseUnitInfo(
+  html: string,
+  course: Course
+): CourseUnit | null {
   const $ = cheerio.load(html);
+
+  if ($("body").children().length === 1) {
+    return null;
+  }
 
   const name = $("div#conteudoinner > h1:nth-child(2)").text();
 
@@ -74,7 +83,7 @@ function scrapeCourseUnitInfo(html) {
   // 2017/2018, then year is 2017.
   const year = parseInt(occurrence.substring(12, 16), 10);
 
-  let semesters = [];
+  let semesters: Period[] = [];
 
   // FIXME: Find a better way to allocate trimestral course units
   if (semester === "1S" || semester === "1T" || semester === "2T") {
@@ -88,12 +97,8 @@ function scrapeCourseUnitInfo(html) {
   return {
     acronym,
     courseYear,
+    courseId: course.id,
     year,
     semesters
   };
 }
-
-module.exports = {
-  scrapeSearchPages,
-  scrapeCourseUnitInfo
-};

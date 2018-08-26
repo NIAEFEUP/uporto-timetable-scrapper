@@ -1,5 +1,6 @@
-const fs = require("fs");
-const { scrapeSearchPages, scrapeCourseUnitInfo } = require("./courseUnits");
+import fs from "fs";
+import { scrapeCourseUnitInfo, scrapeSearchPages } from "./courseUnits";
+import { Course } from "../models";
 
 describe("searchPages", () => {
   test("first page is scraped correctly", () => {
@@ -70,13 +71,42 @@ describe("courseUnitInfo", () => {
       .readFileSync("./examples/course_unit_info.html", "latin1")
       .toString();
 
+    const course: Course = {
+      id: 0,
+      facultyAcronym: "feup",
+      acronym: "TEST",
+      name: "Test Name",
+      planId: 0,
+      year: 2018
+    };
+
     const expected = {
       acronym: "AGRS",
+      courseId: course.id,
       courseYear: 4,
       year: 2018,
       semesters: [2]
     };
 
-    expect(scrapeCourseUnitInfo(html)).toEqual(expected);
+    expect(scrapeCourseUnitInfo(html, course)).toEqual(expected);
+  });
+
+  test("is not scraped when page redirects to another", () => {
+    const html = fs
+      .readFileSync("./examples/course_unit_info_redirect.html", "latin1")
+      .toString();
+
+    const course: Course = {
+      id: 0,
+      facultyAcronym: "feup",
+      acronym: "TEST",
+      name: "Test Name",
+      planId: 0,
+      year: 2018
+    };
+
+    const expected = null;
+
+    expect(scrapeCourseUnitInfo(html, course)).toEqual(expected);
   });
 });
